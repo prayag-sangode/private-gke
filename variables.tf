@@ -1,19 +1,19 @@
 variable "project" {
-  type        = string
+  type    = string
   default = "mypoc-374706"
 }
 
 variable "location" {
-  type        = string
+  type    = string
   default = "asia-east2-b"
 }
 
 variable "region" {
-  type        = string
+  type    = string
   default = "asia-east2"
 }
 
 variable "zone" {
-  type        = string
+  type    = string
   default = "asia-east2-b"
 }

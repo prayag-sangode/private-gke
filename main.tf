@@ -15,10 +15,10 @@ resource "google_compute_subnetwork" "subnet" {
 
 resource "google_container_cluster" "primary" {
   name                     = "pvt-gke-cluster"
-  location                 =  var.location
+  location                 = var.location
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
-  remove_default_node_pool = true 
+  remove_default_node_pool = true
   # networking_mode          = "VPC_NATIVE" 
   initial_node_count = 1
 
@@ -57,8 +57,8 @@ resource "google_container_node_pool" "primary_nodes" {
       env = "dev"
     }
 
-    machine_type = "e2-medium"
-    preemptible  = true
+    machine_type    = "e2-medium"
+    preemptible     = true
     service_account = "GCP-SA@mypoc-374706.iam.gserviceaccount.com"
 
     metadata = {
@@ -90,7 +90,7 @@ resource "google_compute_instance" "default" {
   }
   network_interface {
     network    = "gkepvtvpc"
-    subnetwork = "gkepvtsubnet" 
+    subnetwork = "gkepvtsubnet"
     network_ip = google_compute_address.internal_ip_addr.address
   }
   tags = ["bastion-host"]
