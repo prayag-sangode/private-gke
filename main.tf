@@ -91,7 +91,7 @@ resource "google_compute_instance" "default" {
   network_interface {
     network    = "gkepvtvpc"
     subnetwork = "gkepvtsubnet" 
-    network_ip = google_compute_address.internal_ip_addr
+    network_ip = google_compute_address.internal_ip_addr.address
   }
   tags = ["bastion-host"]
 }
