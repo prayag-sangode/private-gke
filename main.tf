@@ -71,10 +71,10 @@ resource "google_compute_address" "internal_ip_addr" {
   project      = var.project
   address_type = "INTERNAL"
   region       = var.region
-  subnetwork   = "subnet1"
-  name         = "my-ip"
+  subnetwork   = "gkepvtsubnet"
+  name         = "int-ip"
   address      = "10.0.0.7"
-  description  = "An internal IP address for my jump host"
+  description  = "An internal IP address for bastion host"
 }
 
 resource "google_compute_instance" "default" {
