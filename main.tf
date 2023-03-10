@@ -67,7 +67,7 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 }
 
-resource "google_compute_address" "my_internal_ip_addr" {
+resource "google_compute_address" "internal_ip_addr" {
   project      = var.project
   address_type = "INTERNAL"
   region       = var.region
@@ -91,7 +91,7 @@ resource "google_compute_instance" "default" {
   network_interface {
     network    = "gkepvtvpc"
     subnetwork = "gkepvtsubnet" 
-    network_ip = google_compute_address.my_internal_ip_addr.address
+    network_ip = google_compute_address.internal_ip_addr
   }
   tags = ["bastion-host"]
 }
