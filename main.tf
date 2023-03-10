@@ -18,7 +18,7 @@ resource "google_container_cluster" "primary" {
   location                 =  var.location
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
-  remove_default_node_pool = true ## create the smallest possible default node pool and immediately delete it.
+  remove_default_node_pool = true 
   # networking_mode          = "VPC_NATIVE" 
   initial_node_count = 1
 
@@ -34,7 +34,7 @@ resource "google_container_cluster" "primary" {
   master_authorized_networks_config {
     cidr_blocks {
       cidr_block   = "10.0.0.7/32"
-      display_name = "net1"
+      display_name = "gkeauthnet"
     }
 
   }
@@ -59,7 +59,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
     machine_type = "e2-medium"
     preemptible  = true
-    #service_account = google_service_account.mysa.email
+    service_account = GCP-SA@mypoc-374706.iam.gserviceaccount.com
 
     metadata = {
       disable-legacy-endpoints = "true"
