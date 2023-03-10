@@ -7,7 +7,7 @@ resource "google_compute_network" "vpc" {
 
 resource "google_compute_subnetwork" "subnet" {
   name          = "gkepvtsubnet"
-  region        = "asia-south2"
+  region        = var.region
   network       = google_compute_network.vpc.name
   ip_cidr_range = "10.0.0.0/24"
 }
@@ -15,7 +15,7 @@ resource "google_compute_subnetwork" "subnet" {
 
 resource "google_container_cluster" "primary" {
   name                     = "pvt-gke-cluster"
-  location                 = "asia-south2-a"
+  location                 =  var.region
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
   remove_default_node_pool = true ## create the smallest possible default node pool and immediately delete it.
@@ -43,7 +43,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "primary_nodes" {
   name       = google_container_cluster.primary.name
-  location   = "asia-south2-a"
+  location   = var.location
   cluster    = google_container_cluster.primary.name
   node_count = 3
 
@@ -70,7 +70,7 @@ resource "google_container_node_pool" "primary_nodes" {
 resource "google_compute_address" "my_internal_ip_addr" {
   project      = var.project
   address_type = "INTERNAL"
-  region       = "asia-south2"
+  region       = var.region
   subnetwork   = "subnet1"
   name         = "my-ip"
   address      = "10.0.0.7"
@@ -79,8 +79,8 @@ resource "google_compute_address" "my_internal_ip_addr" {
 
 resource "google_compute_instance" "default" {
   project      = var.project
-  zone         = "asia-south2-a"
-  name         = "jump-host"
+  zone         = var.zone
+  name         = "bastion-host"
   machine_type = "e2-medium"
 
   boot_disk {
@@ -89,8 +89,8 @@ resource "google_compute_instance" "default" {
     }
   }
   network_interface {
-    network    = "vpc1"
-    subnetwork = "subnet1" # Replace with a reference or self link to your subnet, in quotes
+    network    = "gkepvtvpc"
+    subnetwork = "gkepvtsubnet" 
     network_ip = google_compute_address.my_internal_ip_addr.address
   }
   tags = ["bastion-host"]
@@ -100,7 +100,7 @@ resource "google_compute_instance" "default" {
 resource "google_compute_firewall" "rules" {
   project = var.project
   name    = "allow-ssh"
-  network = "vpc1" # Replace with a reference or self link to your network, in quotes
+  network = "gkepvtvpc"
 
   allow {
     protocol = "tcp"
@@ -120,8 +120,8 @@ resource "google_project_iam_member" "project" {
 resource "google_compute_router" "router" {
   project = var.project
   name    = "nat-router"
-  network = "vpc1"
-  region  = "asia-south2"
+  network = "gkepvtvpc"
+  region  = var.region
 }
 
 
@@ -129,7 +129,7 @@ module "cloud-nat" {
   source     = "terraform-google-modules/cloud-nat/google"
   version    = "~> 1.2"
   project_id = var.project
-  region     = "asia-south2"
+  region     = var.region
   router     = google_compute_router.router.name
   name       = "nat-config"
 
