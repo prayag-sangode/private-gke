@@ -59,7 +59,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
     machine_type = "e2-medium"
     preemptible  = true
-    service_account = GCP-SA@mypoc-374706.iam.gserviceaccount.com
+    service_account = "GCP-SA@mypoc-374706.iam.gserviceaccount.com"
 
     metadata = {
       disable-legacy-endpoints = "true"
