@@ -75,6 +75,7 @@ resource "google_compute_address" "internal_ip_addr" {
   name         = "int-ip"
   address      = "10.0.0.7"
   description  = "An internal IP address for bastion host"
+  depends_on   = [google_compute_subnetwork.subnet]
 }
 
 resource "google_compute_instance" "default" {
@@ -96,7 +97,6 @@ resource "google_compute_instance" "default" {
   tags = ["bastion-host"]
 }
 
-
 resource "google_compute_firewall" "rules" {
   project = var.project
   name    = "allow-ssh"
@@ -107,6 +107,7 @@ resource "google_compute_firewall" "rules" {
     ports    = ["22"]
   }
   source_ranges = ["35.235.240.0/20"]
+  depends_on = [google_compute_network.vpc]
 }
 
 
@@ -116,14 +117,13 @@ resource "google_project_iam_member" "project" {
   member  = "serviceAccount:GCP-SA@mypoc-374706.iam.gserviceaccount.com"
 }
 
-
 resource "google_compute_router" "router" {
   project = var.project
   name    = "nat-router"
   network = "gkepvtvpc"
   region  = var.region
+  depends_on = [google_compute_network.vpc]
 }
-
 
 module "cloud-nat" {
   source     = "terraform-google-modules/cloud-nat/google"
@@ -132,7 +132,6 @@ module "cloud-nat" {
   region     = var.region
   router     = google_compute_router.router.name
   name       = "nat-config"
-
 }
 
 output "kubernetes_cluster_host" {
